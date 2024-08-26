@@ -8,13 +8,13 @@ export default function RootLayout() {
 	if (isLoading) {
 		return (
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<Text>is loading</Text>
+				<Text>Is loading</Text>
 			</View>
 		)
 	}
 
 	if (!sessionOpen) {
-		return <Redirect href="/sign-in" />
+		return <Redirect href="/authenticate" />
 	}
 
 	return <Stack />
