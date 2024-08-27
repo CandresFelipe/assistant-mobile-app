@@ -1,9 +1,8 @@
-import { Form, FormField } from '@/components'
+import { CustomButton, Form, FormField } from '@/components'
 import { IUserCreation } from '@/types/user'
 import Colors from '@/utils/theme'
 import { RegisterOptions } from 'react-hook-form'
-import { View, Text, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback } from 'react-native'
 
 const signUpFields: FormField<IUserCreation>[] = [
 	{
@@ -79,17 +78,30 @@ const defaultValues: IUserCreation = {
 
 export default function SignInPage() {
 	return (
-		<SafeAreaView
-			style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 48, backgroundColor: Colors.dark.primary }}
+		<KeyboardAvoidingView
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+			style={{ flex: 1, marginBottom: 10, backgroundColor: Colors.dark.primary }}
 		>
-			<ScrollView contentContainerStyle={{ justifyContent: 'center', flex: 1, flexDirection: 'column', gap: 20 }}>
-				<Form
-					fields={signUpFields}
-					title="Registration Form"
-					validationRules={fieldValidations}
-					defaultValues={defaultValues}
-				/>
-			</ScrollView>
-		</SafeAreaView>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<ScrollView
+					contentContainerStyle={{
+						justifyContent: 'center',
+						flex: 1,
+						flexDirection: 'column',
+						gap: 24,
+						paddingHorizontal: 48,
+						backgroundColor: Colors.dark.primary
+					}}
+				>
+					<Form
+						fields={signUpFields}
+						title="Register"
+						validationRules={fieldValidations}
+						defaultValues={defaultValues}
+					/>
+					<CustomButton title={'Submit'} style={{ paddingHorizontal: 48 }} />
+				</ScrollView>
+			</TouchableWithoutFeedback>
+		</KeyboardAvoidingView>
 	)
 }

@@ -1,21 +1,24 @@
 import { useCreateUser, useLogin, useLogout } from '@/queries/auth'
 import { IUserCreation, IUserLogin } from '@/types/user'
+import { UseMutationResult } from '@tanstack/react-query'
 import { createContext, PropsWithChildren, useContext, useState } from 'react'
 
 type AuthContextType = {
-	login: (user: IUserLogin) => void
+	login: UseMutationResult<void, Error, IUserLogin, unknown> | undefined
 	logout: () => void
-	signIn: (data: IUserCreation) => void
+	register: (data: IUserCreation) => void
 	isLoading: boolean
 	sessionOpen: boolean
+	setSessionOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const AuthContext = createContext<AuthContextType>({
-	login: () => null,
+	login: undefined,
 	logout: () => null,
-	signIn: () => null,
+	register: () => null,
 	isLoading: false,
-	sessionOpen: false
+	sessionOpen: false,
+	setSessionOpen: () => false
 })
 
 export function useUserSession() {
@@ -32,16 +35,13 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 	const loginMutation = useLogin()
 	const logoutMutation = useLogout()
 
-	const login = (data: IUserLogin) => {
-		loginMutation.mutate(data)
-	}
 	const logout = () => {
 		logoutMutation.mutate(undefined, {
-			onSuccess: () => setSessionOpen(true)
+			onSuccess: () => setSessionOpen(false)
 		})
 	}
 
-	const signIn = (data: IUserCreation) => {
+	const register = (data: IUserCreation) => {
 		signInMutation.mutate(data, {
 			onSuccess: () => setSessionOpen(true)
 		})
@@ -49,7 +49,7 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 
 	const isLoading = signInMutation.isPending || loginMutation.isPending || logoutMutation.isPending
 
-	const values = { login, logout, signIn, isLoading, sessionOpen }
+	const values = { login: loginMutation, logout, register, isLoading, sessionOpen, setSessionOpen }
 
 	return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
 }

@@ -20,7 +20,7 @@ export class ApiService {
 
 		const _config = {
 			...config,
-			baseURL: `${process.env.EXPO_PUBLIC_API_URL}:8000`,
+			baseURL: `${process.env.EXPO_PUBLIC_API_URL}`,
 			timeout: 5000
 		}
 		this.axiosInstance = axios.create(_config)
@@ -79,6 +79,7 @@ export class ApiService {
 			},
 			(error: AxiosError) => {
 				const { config, response } = error
+				console.log('from api', JSON.stringify(error, undefined, '\t'))
 				if (error.response) {
 					const apiErrorData = response?.data as ApiErrorResponse
 					const detailMessage = apiErrorData.detail || 'An error occurred'

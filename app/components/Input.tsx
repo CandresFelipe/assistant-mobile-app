@@ -3,12 +3,12 @@ import { forwardRef, Fragment, useRef } from 'react'
 import { TextInput, TextInputProps, View, StyleSheet } from 'react-native'
 import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
-interface InputProps extends TextInputProps {
-	label: string
+interface InputProps extends Omit<TextInputProps, 'placeholder'> {
 	onClear?: () => void
 	errorMessage?: string
 	hasError?: boolean
 	hasPlaceholder?: boolean
+	_placeholder?: string
 	disable?: boolean
 }
 
@@ -18,11 +18,11 @@ const INPUT_PLACEHOLDER_ACTIVE_FONT_SIZE = 12
 const INPUT_PLACEHOLDER_DEFAULT_TOP = INPUT_HEIGHT / 2 - 10
 const INPUT_PLACEHOLDER_ACTIVE_TOP = 5
 
-export const Input = forwardRef<TextInput, InputProps>(({ label, errorMessage, hasError, ...props }, ref) => {
+export const Input = forwardRef<TextInput, InputProps>(({ errorMessage, hasError, _placeholder, ...props }, ref) => {
 	const textRef = useRef<string>('')
 	const placeholderPositionTop = useSharedValue(INPUT_PLACEHOLDER_DEFAULT_TOP)
 	const placeholderFontSize = useSharedValue(INPUT_PLACEHOLDER_DEFAULT_FONT_SIZE)
-	const hasPlaceholder = props.placeholder && props.placeholder.length > 0
+	const hasPlaceholder = _placeholder && _placeholder.length > 0
 
 	const handlingPlaceholderOnFocus = () => {
 		placeholderFontSize.value = withTiming(INPUT_PLACEHOLDER_ACTIVE_FONT_SIZE, {
@@ -70,14 +70,13 @@ export const Input = forwardRef<TextInput, InputProps>(({ label, errorMessage, h
 						onFocus={handlingPlaceholderOnFocus}
 						onBlur={handlingPlaceholderOnBlur}
 						underlineColorAndroid="transparent"
-						style={[styles.input, { color: hasError ? Colors.error.primary : Colors.light.textSecondary }]}
+						value={textRef.current}
+						style={[styles.input, { color: hasError ? Colors.error.secondary : Colors.light.textSecondary }]}
 						onChangeText={onChangeText}
-					>
-						{label}
-					</TextInput>
+					></TextInput>
 					{!!errorMessage && <Animated.Text style={styles.errorMessage}>{errorMessage}</Animated.Text>}
 					{hasPlaceholder && (
-						<Animated.Text style={[placeholderStyle, styles.placeholderContainer]}>{props.placeholder}</Animated.Text>
+						<Animated.Text style={[placeholderStyle, styles.placeholderContainer]}>{_placeholder}</Animated.Text>
 					)}
 				</View>
 			</Fragment>
@@ -90,24 +89,27 @@ const styles = StyleSheet.create({
 		position: 'relative'
 	},
 	inputContainer: {
-		borderRadius: 5,
+		borderRadius: 24,
 		height: INPUT_HEIGHT
 	},
 	input: {
-		paddingHorizontal: 3,
-		paddingVertical: 2,
-		backgroundColor: Colors.light.white,
-		borderRadius: 5,
+		paddingHorizontal: 10,
+		paddingTop: 10,
+		backgroundColor: Colors.light.secondary,
+		borderRadius: 24,
 		flexWrap: 'wrap',
 		borderWidth: 3,
-		borderColor: Colors.light.textSecondary,
-		height: INPUT_HEIGHT
+		borderColor: Colors.dark.primary,
+		height: INPUT_HEIGHT,
+		fontWeight: 'bold'
 	},
 	errorMessage: {
-		color: Colors.error.primary
+		color: Colors.error.primary,
+		paddingHorizontal: 10
 	},
 	placeholderContainer: {
 		position: 'absolute',
-		left: 12
+		left: 15,
+		color: Colors.light.textSecondary
 	}
 })

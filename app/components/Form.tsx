@@ -58,13 +58,13 @@ export const Form = forwardRef<IFormHandler, AuthFormProps<any>>(
 									<Input
 										{...props}
 										ref={_field.ref}
-										placeholder={field.placeholder}
-										label={field.label}
+										_placeholder={field.label}
 										returnKeyType="next"
 										onBlur={_field.onBlur}
 										errorMessage={error?.message}
 										onChangeText={_field.onChange}
 										hasError={!!error?.message}
+										secureTextEntry={_field.name === 'password'}
 									/>
 								)
 							}}
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: 'bold',
 		marginVertical: 20,
-		color: Colors.light.white
+		textAlign: 'center',
+		color: Colors.light.textSecondary
 	}
 })

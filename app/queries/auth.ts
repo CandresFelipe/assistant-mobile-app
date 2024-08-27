@@ -19,12 +19,7 @@ export function useLogin() {
 	return useMutation({
 		mutationKey: [AuthKeys.LoginUser],
 		mutationFn: async (data: IUserLogin) => {
-			const res = await AuthorizationService.loginUser(data)
-
-			if (!res) {
-				console.error('JWT token not part of the response')
-				return
-			}
+			await AuthorizationService.loginUser(data)
 		}
 	})
 }
