@@ -33,6 +33,7 @@ export default function Layout() {
 					tabBarIcon: ({ color }) => <Feather name="settings" size={24} color={color} />
 				}}
 			/>
+			<Tabs.Screen name="success-feedback" options={{ href: null }} />
 		</Tabs>
 	)
 }

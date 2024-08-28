@@ -1,7 +1,7 @@
 import { useCreateUser, useLogin, useLogout } from '@/queries/auth'
 import { IUserCreation, IUserLogin } from '@/types/user'
 import { UseMutationResult } from '@tanstack/react-query'
-import { createContext, PropsWithChildren, useContext, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 
 type AuthContextType = {
 	login: UseMutationResult<void, Error, IUserLogin, unknown> | undefined
@@ -34,6 +34,12 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 	const signInMutation = useCreateUser()
 	const loginMutation = useLogin()
 	const logoutMutation = useLogout()
+
+	useEffect(() => {
+		if (loginMutation.isSuccess) {
+			setSessionOpen(true)
+		}
+	}, [loginMutation.isSuccess])
 
 	const logout = () => {
 		logoutMutation.mutate(undefined, {

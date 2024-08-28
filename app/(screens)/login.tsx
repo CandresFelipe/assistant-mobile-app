@@ -38,15 +38,12 @@ const defaultValues: IUserLogin = {
 
 export default function LogIn() {
 	const formRef = useRef<IFormHandler>(null)
-	const { login, setSessionOpen } = useUserSession()
+	const { login } = useUserSession()
 
 	const onLogIn = (data: IUserLogin) => {
 		login?.mutate(data, {
 			onError: (error) => {
 				console.log(error)
-			},
-			onSuccess: () => {
-				setSessionOpen(true)
 			}
 		})
 	}

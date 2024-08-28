@@ -4,6 +4,19 @@
 		"slug": "assistant-mobile-app",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"userInterfaceStyle": "light"
+		"userInterfaceStyle": "light",
+		"ios": {
+			"infoPlist": {
+				"NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+			}
+		},
+		"plugins": [
+			[
+				"expo-camera",
+				{
+					"cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+				}
+			]
+		]
 	}
 }
