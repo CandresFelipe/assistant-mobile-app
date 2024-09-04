@@ -1,29 +1,41 @@
 import { NavigationHeader } from '@/components'
-import { AuthenticationProvider, useUserSession } from '@/contexts/authenticationContext'
-import { Toasts } from '@backpackapp-io/react-native-toast'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useUserSession } from '@/contexts/authenticationContext'
+import Colors from '@/utils/theme'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import { useEffect } from 'react'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
-const RootLayout = () => {
-	const { isLoading, sessionOpen } = useUserSession()
+export default function AppLayout() {
+	const { sessionOpen, isLoading } = useUserSession()
 	const segments = useSegments()
 	const router = useRouter()
 
 	useEffect(() => {
-		const inAuthGroup = segments[0] === '(protected)'
-
-		if (!sessionOpen && inAuthGroup && !isLoading) {
-			router.replace('/')
-		} else if (sessionOpen) {
-			router.replace('/(protected)')
+		const allInGroup = segments[0] === '(protected)'
+		if (!sessionOpen && allInGroup) {
+			router.replace('/welcome')
+		} else if (sessionOpen && !allInGroup) {
+			router.replace('/qrcode-reader')
 		}
 	}, [sessionOpen])
 
+	if (isLoading) {
+		return (
+			<View style={styles.loadingViewContainer}>
+				<ActivityIndicator size={'large'} color={Colors.light.white} />
+			</View>
+		)
+	}
+
 	return (
-		<Stack>
+		<Stack
+			screenOptions={{
+				statusBarStyle: 'light',
+				statusBarTranslucent: true,
+				statusBarAnimation: 'fade',
+				animation: 'fade_from_bottom'
+			}}
+		>
 			<Stack.Screen name="index" options={{ headerShown: false }} />
 			<Stack.Screen
 				name="register"
@@ -37,21 +49,20 @@ const RootLayout = () => {
 					header: (props) => <NavigationHeader onNavigate={props.navigation.goBack} />
 				}}
 			/>
-			<Stack.Screen name="(protected)" options={{ headerShown: false }} />
+			<Stack.Screen options={{ headerShown: false }} name="welcome" />
+			<Stack.Screen
+				name="(protected)"
+				options={{ headerShown: false, statusBarStyle: 'dark', statusBarAnimation: 'fade', animation: 'default' }}
+			/>
 		</Stack>
 	)
 }
 
-export default function Layout() {
-	const queryClient = new QueryClient()
-	return (
-		<QueryClientProvider client={queryClient}>
-			<AuthenticationProvider>
-				<GestureHandlerRootView style={{ flex: 1 }}>
-					<RootLayout />
-					<Toasts />
-				</GestureHandlerRootView>
-			</AuthenticationProvider>
-		</QueryClientProvider>
-	)
-}
+const styles = StyleSheet.create({
+	loadingViewContainer: {
+		flex: 1,
+		backgroundColor: Colors.dark.primary,
+		justifyContent: 'center',
+		alignItems: 'center'
+	}
+})

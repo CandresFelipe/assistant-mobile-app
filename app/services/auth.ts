@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import { ApiService } from './api'
 import { defaultErrorHandler } from '@/utils/error-handling'
-import { saveSessionTokens, removeSessionTokens, getSessionTokens } from './storage'
+import { saveSessionTokens, getSessionTokens } from './storage'
 import { ILoginResponse, IUserCreation, IUserLogin } from '@/types/user'
 
 export class AuthorizationService {
@@ -25,10 +25,7 @@ export class AuthorizationService {
 
 	static async logoutUser(): Promise<AxiosResponse<undefined, unknown> | undefined> {
 		const response = await this.apiClient.post<undefined>('/auth/logout/', {})
-		if (response?.status === 205) {
-			await removeSessionTokens()
-		}
-		return response
+		return response?.data
 	}
 
 	static async verifyUser(token: string): Promise<boolean> {

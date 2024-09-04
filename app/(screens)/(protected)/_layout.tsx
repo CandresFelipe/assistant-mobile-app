@@ -1,11 +1,13 @@
 import { Tabs } from 'expo-router'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Feather from '@expo/vector-icons/Feather'
-export default function Layout() {
+
+export default function ProtectedLayout() {
 	return (
 		<Tabs screenOptions={{ headerShown: false }}>
+			<Tabs.Screen name="index" options={{ headerShown: false, href: null }} />
 			<Tabs.Screen
-				name="index"
+				name="qrcode-reader"
 				options={{
 					tabBarLabel: 'Scan QR',
 					title: 'Scan QR',

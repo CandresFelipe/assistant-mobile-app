@@ -1,7 +1,7 @@
 import * as SecureStorage from 'expo-secure-store'
 
 enum StorageKeys {
-	SessionTokens = 'accessToken'
+	SessionTokens = 'session-tokens'
 }
 
 export async function saveSessionTokens(tokens: object) {

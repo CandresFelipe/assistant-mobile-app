@@ -1,6 +1,6 @@
 import { FormField, Form, CustomButton, IFormHandler, LoadingModal } from '@/components'
 import { IUserLogin } from '@/types/user'
-import { KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import { KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { RegisterOptions } from 'react-hook-form'
 import Colors from '@/utils/theme'
 import { useRef } from 'react'
@@ -45,10 +45,7 @@ export default function LogIn() {
 	}
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-			style={{ flex: 1, marginBottom: 10, backgroundColor: Colors.dark.primary }}
-		>
+		<KeyboardAvoidingView style={{ flex: 1, marginBottom: 10, backgroundColor: Colors.dark.primary }}>
 			<TouchableWithoutFeedback>
 				<ScrollView
 					contentContainerStyle={{

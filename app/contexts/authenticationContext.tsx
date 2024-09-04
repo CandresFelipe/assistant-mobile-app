@@ -1,7 +1,10 @@
 import { useCreateUser, useLogin, useLogout } from '@/queries/auth'
 import { AuthorizationService } from '@/services/auth'
+import { removeSessionTokens } from '@/services/storage'
 import { IUserCreation, IUserLogin } from '@/types/user'
+import { defaultErrorHandler } from '@/utils/error-handling'
 import { UseMutationResult } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 
 type AuthContextType = {
@@ -36,6 +39,7 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 	const signInMutation = useCreateUser()
 	const loginMutation = useLogin()
 	const logoutMutation = useLogout()
+	const router = useRouter()
 
 	useEffect(() => {
 		if (loginMutation.isSuccess) {
@@ -44,11 +48,18 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 	}, [loginMutation.isSuccess])
 
 	useEffect(() => {
+		if (loginMutation.isSuccess) return
+
 		const validateUser = async () => {
-			const isValid = await AuthorizationService.checkUserVerification()
-			console.log(`[AuthContext] [isUserValid]: ${isValid}`)
-			setSessionOpen(isValid)
-			setCheckingSession(false)
+			try {
+				const isValid = await AuthorizationService.checkUserVerification()
+				console.log(`[AuthContext] [isUserValid]: ${isValid}`)
+				setSessionOpen(isValid)
+			} catch (error) {
+				defaultErrorHandler(error, true)
+			} finally {
+				setCheckingSession(false)
+			}
 		}
 
 		validateUser()
@@ -56,13 +67,19 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 
 	const logout = () => {
 		logoutMutation.mutate(undefined, {
-			onSuccess: () => setSessionOpen(false)
+			onSuccess: async () => {
+				removeSessionTokens()
+				setSessionOpen(false)
+				router.replace('/welcome')
+			}
 		})
 	}
 
 	const register = (data: IUserCreation) => {
 		signInMutation.mutate(data, {
-			onSuccess: () => setSessionOpen(true)
+			onSuccess: () => {
+				setSessionOpen(true)
+			}
 		})
 	}
 
