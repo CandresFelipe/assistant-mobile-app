@@ -1,6 +1,6 @@
 import { BaseError } from '@/error/BaseError'
 import { ErrorCodes } from '@/error/ErrorCodes'
-import { QRCodeService } from '@/services/qrcode'
+import { QRCodeDataRequest, QRCodeService } from '@/services/qrcode'
 import { useMutation } from '@tanstack/react-query'
 
 enum VerifyAssistanceKey {
@@ -10,12 +10,12 @@ enum VerifyAssistanceKey {
 export function useVerifyAssistance() {
 	return useMutation({
 		mutationKey: [VerifyAssistanceKey.CheckQRcode],
-		mutationFn: async (data: string) => {
-			if (!data) {
+		mutationFn: async ({ qr_data }: QRCodeDataRequest) => {
+			if (!qr_data) {
 				throw new BaseError(ErrorCodes.NotFound, 'QR id not defined, check again.', '', true)
 			}
 
-			return await QRCodeService.verifyQRcode(data)
+			return await QRCodeService.verifyQRcode({ qr_data })
 		}
 	})
 }
