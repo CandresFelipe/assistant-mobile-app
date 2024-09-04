@@ -1,20 +1,7 @@
-import { useUserSession } from '@/contexts/authenticationContext'
 import { Tabs } from 'expo-router'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Feather from '@expo/vector-icons/Feather'
-import { View, Text } from 'react-native'
-
 export default function Layout() {
-	const { isLoading } = useUserSession()
-
-	if (isLoading) {
-		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<Text>Is loading</Text>
-			</View>
-		)
-	}
-
 	return (
 		<Tabs screenOptions={{ headerShown: false }}>
 			<Tabs.Screen

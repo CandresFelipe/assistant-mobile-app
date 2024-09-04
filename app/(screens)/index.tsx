@@ -1,15 +1,25 @@
 import { CustomButton } from '@/components'
+import { useUserSession } from '@/contexts/authenticationContext'
 import Colors from '@/utils/theme'
 import { router } from 'expo-router'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, ActivityIndicator } from 'react-native'
 
 export default function EntryScreen() {
+	const { isLoading } = useUserSession()
 	const registerNav = () => {
 		router.navigate('/register')
 	}
 
 	const logInNav = () => {
 		router.navigate('/login')
+	}
+
+	if (isLoading) {
+		return (
+			<View style={styles.loadingViewContainer}>
+				<ActivityIndicator size={'large'} color={Colors.light.white} />
+			</View>
+		)
 	}
 
 	return (
@@ -27,5 +37,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 24,
 		backgroundColor: Colors.dark.primary
+	},
+	loadingViewContainer: {
+		flex: 1,
+		backgroundColor: Colors.dark.primary,
+		justifyContent: 'center',
+		alignItems: 'center'
 	}
 })

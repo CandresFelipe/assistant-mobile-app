@@ -1,4 +1,5 @@
 import { useCreateUser, useLogin, useLogout } from '@/queries/auth'
+import { AuthorizationService } from '@/services/auth'
 import { IUserCreation, IUserLogin } from '@/types/user'
 import { UseMutationResult } from '@tanstack/react-query'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
@@ -31,6 +32,7 @@ export function useUserSession() {
 
 export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 	const [sessionOpen, setSessionOpen] = useState(false)
+	const [checkingSession, setCheckingSession] = useState(true)
 	const signInMutation = useCreateUser()
 	const loginMutation = useLogin()
 	const logoutMutation = useLogout()
@@ -40,6 +42,17 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 			setSessionOpen(true)
 		}
 	}, [loginMutation.isSuccess])
+
+	useEffect(() => {
+		const validateUser = async () => {
+			const isValid = await AuthorizationService.checkUserVerification()
+			console.log(`[AuthContext] [isUserValid]: ${isValid}`)
+			setSessionOpen(isValid)
+			setCheckingSession(false)
+		}
+
+		validateUser()
+	}, [])
 
 	const logout = () => {
 		logoutMutation.mutate(undefined, {
@@ -53,7 +66,7 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 		})
 	}
 
-	const isLoading = signInMutation.isPending || loginMutation.isPending || logoutMutation.isPending
+	const isLoading = checkingSession
 
 	const values = { login: loginMutation, logout, register, isLoading, sessionOpen, setSessionOpen }
 

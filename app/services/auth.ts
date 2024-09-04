@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import { ApiService } from './api'
 import { defaultErrorHandler } from '@/utils/error-handling'
-import { getAccessToken, removeAccessToken, saveAccessToken } from './storage'
+import { saveSessionTokens, removeSessionTokens, getSessionTokens } from './storage'
 import { ILoginResponse, IUserCreation, IUserLogin } from '@/types/user'
 
 export class AuthorizationService {
@@ -17,7 +17,7 @@ export class AuthorizationService {
 	static async loginUser(params: IUserLogin): Promise<void | undefined> {
 		const response = await this.apiClient.post<ILoginResponse>(`${this.BASE_PATH}create`, params)
 		if (response?.data) {
-			await saveAccessToken(`Bearer ${response.data.access}`)
+			await saveSessionTokens(response.data)
 		} else {
 			defaultErrorHandler(response, false)
 		}
@@ -26,7 +26,7 @@ export class AuthorizationService {
 	static async logoutUser(): Promise<AxiosResponse<undefined, unknown> | undefined> {
 		const response = await this.apiClient.post<undefined>('/auth/logout/', {})
 		if (response?.status === 205) {
-			await removeAccessToken()
+			await removeSessionTokens()
 		}
 		return response
 	}
@@ -44,19 +44,20 @@ export class AuthorizationService {
 	}
 
 	static async checkUserVerification() {
-		const token = await getAccessToken()
+		const token = await getSessionTokens()
 
-		if (!token) {
-			throw new Error('something has wrong with the access flow')
-		}
-		try {
-			await this.verifyUser(token)
-		} catch (error) {
-			console.warn('Token expired, redirecting to login...', error)
-			defaultErrorHandler(error, true)
-			await removeAccessToken()
-		}
+		if (!token) return false
 
-		return false
+		const isValidAccessToken = await this.verifyUser(token.access)
+
+		if (!isValidAccessToken) return false
+
+		const newTokens = await this.refreshUserToken(token.refresh)
+
+		if (!newTokens) return false
+
+		saveSessionTokens(newTokens)
+
+		return true
 	}
 }

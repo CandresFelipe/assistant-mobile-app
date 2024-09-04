@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, CreateAxiosDefaults, Method } from 'axios'
 
 import { ApiError } from '@/error/ApiError'
-import { getAccessToken } from './storage'
+import { getSessionTokens } from './storage'
 
 type ApiResponseType<T> = Promise<AxiosResponse<T, unknown>> | undefined
 
@@ -57,19 +57,15 @@ export class ApiService {
 		return this.axiosInstance?.delete<T>(url, config)
 	}
 
-	private async getJwtToken() {
-		return await getAccessToken()
-	}
-
 	private addJwtRequestInterceptor() {
 		this.axiosInstance?.interceptors.request.use(
 			async (config) => {
-				const bearerToken = await this.getJwtToken()
+				const tokens = await getSessionTokens()
 
-				if (!bearerToken) {
+				if (!tokens) {
 					return config
 				}
-				config.headers.Authorization = bearerToken
+				config.headers.Authorization = `Bearer ${tokens.access}`
 
 				return config
 			},
