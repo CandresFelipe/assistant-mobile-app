@@ -1,6 +1,30 @@
 import { ApiError } from '@/error/ApiError'
 import { BaseError } from '@/error/BaseError'
 import { ErrorCodes } from '@/error/ErrorCodes'
+import { toast, ToastPosition } from '@backpackapp-io/react-native-toast'
+import Colors from './theme'
+
+export function showErrorMessageToast(message: string) {
+	toast.error(message, {
+		height: 50,
+		position: ToastPosition.TOP,
+		styles: {
+			view: {
+				backgroundColor: Colors.error.secondary,
+				borderRadius: 5,
+				flexGrow: 1,
+				minWidth: 300,
+				flexShrink: 1
+			},
+			text: {
+				color: 'white',
+				fontWeight: 'bold',
+				flexShrink: 1,
+				flexWrap: 'wrap'
+			}
+		}
+	})
+}
 
 export function isBaseError(error: unknown): error is BaseError {
 	return error instanceof BaseError && error.code in ErrorCodes
@@ -30,10 +54,7 @@ export function handleApiError(error: ApiError, silent: boolean) {
 	const apiError = asApiError(error)
 
 	if (apiError && !silent) {
-		return {
-			message: apiError.detail || apiError.message,
-			code: apiError.status
-		}
+		showErrorMessageToast(`${Object.values(apiError.body).at(0)}`)
 	}
 
 	return { message: 'An unexpected API error occurred.' }
@@ -43,10 +64,7 @@ export function handleBaseError(error: unknown, silent: boolean) {
 	const baseError = asBaseError(error)
 
 	if (baseError && !silent) {
-		return {
-			message: baseError.message,
-			code: baseError.code
-		}
+		showErrorMessageToast(baseError.title)
 	}
 
 	return { message: 'An unexpected base error occurred.' }

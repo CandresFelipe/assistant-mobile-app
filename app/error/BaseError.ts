@@ -7,7 +7,7 @@ export class BaseError extends Error {
 	readonly showToUser: boolean
 	readonly debugInfo: string
 
-	constructor(code: ErrorCodes, title: string, description: string, showToUser: false, debugInfo = '') {
+	constructor(code: ErrorCodes, title: string, description: string, showToUser: boolean = false, debugInfo = '') {
 		super(`${title}: ${description}`)
 		;(this.code = code),
 			(this.title = title),

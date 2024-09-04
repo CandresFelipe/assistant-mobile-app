@@ -19,14 +19,14 @@ export type ApiResult = {
 	readonly ok: boolean
 	readonly status: number
 	readonly statusText: string
-	readonly body: unknown
+	readonly body: object
 }
 
 export class ApiError extends Error {
 	public readonly url: string
 	public readonly status: number
 	public readonly statusText: string
-	public readonly body: unknown
+	public readonly body: object
 	public readonly request: ApiRequestOptions
 	public readonly detail?: string
 

@@ -6,7 +6,12 @@ import { getAccessToken } from './storage'
 type ApiResponseType<T> = Promise<AxiosResponse<T, unknown>> | undefined
 
 interface ApiErrorResponse {
-	detail: string
+	name: string
+	url?: string
+	status?: number
+	statusText?: string
+	body: object
+	details?: string
 }
 
 export class ApiService {
@@ -79,10 +84,17 @@ export class ApiService {
 			},
 			(error: AxiosError) => {
 				const { config, response } = error
-				console.log('from api', JSON.stringify(error, undefined, '\t'))
-				if (error.response) {
-					const apiErrorData = response?.data as ApiErrorResponse
-					const detailMessage = apiErrorData.detail || 'An error occurred'
+
+				if (response) {
+					const apiErrorData: ApiErrorResponse = {
+						name: error.name,
+						url: config?.url,
+						status: error.status,
+						statusText: response.statusText,
+						body: response.data || {},
+						details: response.data as string
+					}
+					const detailMessage = JSON.stringify(apiErrorData.body) || apiErrorData.details || 'An error occurred'
 					const apiError = new ApiError(
 						{
 							method: config?.method as Method,
@@ -95,7 +107,7 @@ export class ApiService {
 							ok: response?.status ? response?.status >= 200 && response?.status < 400 : false,
 							status: response?.status || 500,
 							statusText: response?.statusText || '',
-							body: response?.data
+							body: response?.data as object
 						},
 						detailMessage
 					)

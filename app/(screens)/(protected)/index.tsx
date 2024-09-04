@@ -6,11 +6,14 @@ import {
 	PermissionStatus,
 	BarcodeScanningResult
 } from 'expo-camera'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { CustomButton } from '@/components'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { CustomButton, LoadingModal } from '@/components'
 import { IconFrame } from '@/icons'
 import { useIsAppActive } from '@/hooks/useIsAppActive'
 import { useFocusEffect, useRouter } from 'expo-router'
+import { useVerifyAssistance } from '@/queries/verifyAssistance'
+import { defaultErrorHandler } from '@/utils/error-handling'
+import { Toasts } from '@backpackapp-io/react-native-toast'
 
 export default function QRScanScreen() {
 	const [cameraPermission, requestCameraPermission] = useCameraPermissions()
@@ -18,6 +21,7 @@ export default function QRScanScreen() {
 	const isActiveApp = useIsAppActive()
 	const isScreenFocused = useRef(false)
 	const camera = useRef<CameraView>(null)
+	const verifyAssitanceMutation = useVerifyAssistance()
 	const router = useRouter()
 	const [isScanning, setIsScanning] = useState(true)
 
@@ -55,21 +59,18 @@ export default function QRScanScreen() {
 		retryPermissionRequest()
 	}, [cameraPermission?.canAskAgain])
 
-	useEffect(() => {
-		const fun = async () => {
-			if (responseCameraPermission?.granted) {
-				const res = await camera.current?.getAvailablePictureSizesAsync()
-				console.log(res)
-			}
-		}
-		fun()
-	}, [responseCameraPermission?.granted])
-
 	const onCheckQrCode = (scanningResult: BarcodeScanningResult) => {
 		if (scanningResult.data && isActiveApp && isScanning && isScreenFocused) {
-			console.log(scanningResult.data)
 			setIsScanning(false)
-			router.navigate('/success-feedback')
+			verifyAssitanceMutation.mutate(scanningResult.data, {
+				onSuccess: () => {
+					setIsScanning(false)
+					router.navigate('/success-feedback/')
+				},
+				onError: (error) => {
+					defaultErrorHandler(error, false)
+				}
+			})
 		}
 	}
 
@@ -81,41 +82,45 @@ export default function QRScanScreen() {
 		)
 	}
 	return (
-		<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-			<View style={{ flex: 1, position: 'relative', marginHorizontal: 48, justifyContent: 'space-evenly' }}>
-				<View style={styles.cameraContainer}>
-					<CameraView
-						ref={camera}
-						style={{ height: 400, width: 300 }}
-						autofocus="on"
-						barcodeScannerSettings={{
-							barcodeTypes: ['qr']
-						}}
-						active={isActiveApp && isScreenFocused.current}
-						facing="back"
-						onBarcodeScanned={onCheckQrCode}
-					/>
-					<View style={{ position: 'absolute', left: 0 }}>
-						<IconFrame />
+		<Fragment>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<View style={{ flex: 1, position: 'relative', marginHorizontal: 48, justifyContent: 'space-evenly' }}>
+					<View style={styles.cameraContainer}>
+						<CameraView
+							ref={camera}
+							style={{ height: 400, width: 300 }}
+							autofocus="on"
+							barcodeScannerSettings={{
+								barcodeTypes: ['qr']
+							}}
+							active={isActiveApp && isScreenFocused.current}
+							facing="back"
+							onBarcodeScanned={onCheckQrCode}
+						/>
+						<View style={{ position: 'absolute', left: 0 }}>
+							<IconFrame />
+						</View>
+						<View style={{ position: 'absolute', right: 0, transform: 'rotate(90deg)' }}>
+							<IconFrame />
+						</View>
+						<View style={{ position: 'absolute', bottom: 0, transform: 'rotate(-90deg)' }}>
+							<IconFrame />
+						</View>
+						<View style={{ position: 'absolute', bottom: 0, right: 0, transform: 'rotate(180deg)' }}>
+							<IconFrame />
+						</View>
 					</View>
-					<View style={{ position: 'absolute', right: 0, transform: 'rotate(90deg)' }}>
-						<IconFrame />
+					<View>
+						<Text style={{ fontSize: 24, justifyContent: 'center', textAlign: 'center', fontWeight: 'bold' }}>
+							{' '}
+							Scan QRcode for checking assitance !
+						</Text>
 					</View>
-					<View style={{ position: 'absolute', bottom: 0, transform: 'rotate(-90deg)' }}>
-						<IconFrame />
-					</View>
-					<View style={{ position: 'absolute', bottom: 0, right: 0, transform: 'rotate(180deg)' }}>
-						<IconFrame />
-					</View>
-				</View>
-				<View>
-					<Text style={{ fontSize: 24, justifyContent: 'center', textAlign: 'center', fontWeight: 'bold' }}>
-						{' '}
-						Scan QRcode for checking assitance !
-					</Text>
 				</View>
 			</View>
-		</View>
+			<LoadingModal visible={verifyAssitanceMutation.isPending} />
+			<Toasts onToastHide={() => setIsScanning(true)} />
+		</Fragment>
 	)
 }
 

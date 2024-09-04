@@ -1,4 +1,4 @@
-import { FormField, Form, CustomButton, IFormHandler } from '@/components'
+import { FormField, Form, CustomButton, IFormHandler, LoadingModal } from '@/components'
 import { IUserLogin } from '@/types/user'
 import { KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback } from 'react-native'
 import { RegisterOptions } from 'react-hook-form'
@@ -41,11 +41,7 @@ export default function LogIn() {
 	const { login } = useUserSession()
 
 	const onLogIn = (data: IUserLogin) => {
-		login?.mutate(data, {
-			onError: (error) => {
-				console.log(error)
-			}
-		})
+		login?.mutate(data)
 	}
 
 	return (
@@ -75,6 +71,7 @@ export default function LogIn() {
 					<CustomButton title={'Submit'} style={{ paddingHorizontal: 48 }} onPress={() => formRef.current?.submit()} />
 				</ScrollView>
 			</TouchableWithoutFeedback>
+			<LoadingModal visible={login?.isPending} />
 		</KeyboardAvoidingView>
 	)
 }

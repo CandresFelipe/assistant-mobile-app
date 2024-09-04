@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 		height: INPUT_HEIGHT
 	},
 	input: {
-		paddingHorizontal: 10,
+		paddingHorizontal: 15,
 		paddingTop: 10,
 		backgroundColor: Colors.light.secondary,
 		borderRadius: 24,

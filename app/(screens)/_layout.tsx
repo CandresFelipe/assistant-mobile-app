@@ -1,10 +1,11 @@
 import { NavigationHeader } from '@/components'
 import { AuthenticationProvider, useUserSession } from '@/contexts/authenticationContext'
+import { Toasts } from '@backpackapp-io/react-native-toast'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import { useEffect } from 'react'
 
-import { View, Text } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const RootLayout = () => {
 	const { isLoading, sessionOpen } = useUserSession()
@@ -20,14 +21,6 @@ const RootLayout = () => {
 			router.replace('/(protected)')
 		}
 	}, [sessionOpen])
-
-	if (isLoading) {
-		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<Text>Is loading</Text>
-			</View>
-		)
-	}
 
 	return (
 		<Stack>
@@ -54,7 +47,10 @@ export default function Layout() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<AuthenticationProvider>
-				<RootLayout />
+				<GestureHandlerRootView style={{ flex: 1 }}>
+					<RootLayout />
+					<Toasts />
+				</GestureHandlerRootView>
 			</AuthenticationProvider>
 		</QueryClientProvider>
 	)
