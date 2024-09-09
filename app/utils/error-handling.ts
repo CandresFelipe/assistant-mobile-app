@@ -3,6 +3,7 @@ import { BaseError } from '@/error/BaseError'
 import { ErrorCodes } from '@/error/ErrorCodes'
 import { toast, ToastPosition } from '@backpackapp-io/react-native-toast'
 import Colors from './theme'
+import { NetworkError } from '@/error/NetworkError'
 
 export function showErrorMessageToast(message: string) {
 	toast.error(message, {
@@ -39,7 +40,7 @@ export function isApiError(error: unknown): error is ApiError {
 export function asApiError(error: unknown) {
 	if (!error) return
 
-	if (isApiError(error)) return error
+	if (isApiError(error)) return error as ApiError
 }
 
 export function asBaseError(error: unknown): BaseError | undefined {
@@ -48,6 +49,21 @@ export function asBaseError(error: unknown): BaseError | undefined {
 	if (isBaseError(error)) return error
 
 	return
+}
+
+export function isNetworkError(error: unknown): error is NetworkError {
+	if (!error) return false
+
+	return error instanceof NetworkError
+}
+
+export function handleNetworkError(error: NetworkError, silent: boolean) {
+	const networkError = error as NetworkError
+
+	if (networkError && !silent) {
+		showErrorMessageToast(`${networkError.title}: ${networkError.description}`)
+	}
+	return `[${networkError.message}]: ${networkError.description} code: ${networkError.code}`
 }
 
 export function handleApiError(error: ApiError, silent: boolean) {
@@ -75,6 +91,8 @@ export function defaultErrorHandler(error: unknown, silent = true) {
 		return handleBaseError(error, silent)
 	} else if (isApiError(error)) {
 		return handleApiError(error, silent)
+	} else if (isNetworkError(error)) {
+		return handleNetworkError(error, silent)
 	} else if (error instanceof Error) {
 		// Handle generic errors if necessary
 		if (!silent) {

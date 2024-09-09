@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, Cr
 
 import { ApiError } from '@/error/ApiError'
 import { getSessionTokens } from './storage'
+import { NetworkError } from '@/error/NetworkError'
 
 type ApiResponseType<T> = Promise<AxiosResponse<T, unknown>> | undefined
 
@@ -79,9 +80,12 @@ export class ApiService {
 				return response
 			},
 			(error: AxiosError) => {
-				const { config, response } = error
+				const { config, response, stack } = error
 
-				if (response) {
+				if (stack && error.code === 'ERR_NETWORK') {
+					const networkError = new NetworkError(error.message, error.code ?? '')
+					return Promise.reject(networkError)
+				} else if (response) {
 					const apiErrorData: ApiErrorResponse = {
 						name: error.name,
 						url: config?.url,

@@ -5,6 +5,7 @@ import { RegisterOptions } from 'react-hook-form'
 import Colors from '@/utils/theme'
 import { useRef } from 'react'
 import { useUserSession } from '@/contexts/authenticationContext'
+import { defaultErrorHandler } from '@/utils/error-handling'
 
 const logInFields: FormField<IUserLogin>[] = [
 	{
@@ -41,7 +42,11 @@ export default function LogIn() {
 	const { login } = useUserSession()
 
 	const onLogIn = (data: IUserLogin) => {
-		login?.mutate(data)
+		login?.mutate(data, {
+			onError: (error) => {
+				defaultErrorHandler(error, true)
+			}
+		})
 	}
 
 	return (

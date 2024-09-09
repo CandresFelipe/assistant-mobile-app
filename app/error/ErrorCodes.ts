@@ -2,5 +2,6 @@ export enum ErrorCodes {
 	NotFound,
 	NotAuthorized,
 	RfcError,
-	Unknown
+	Unknown,
+	NetworkError
 }
