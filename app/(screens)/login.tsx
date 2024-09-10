@@ -50,7 +50,7 @@ export default function LogIn() {
 	}
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1, marginBottom: 10, backgroundColor: Colors.dark.primary }}>
+		<KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.dark.primary }}>
 			<TouchableWithoutFeedback>
 				<ScrollView
 					contentContainerStyle={{
