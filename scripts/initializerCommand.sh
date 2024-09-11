@@ -12,7 +12,7 @@ echo "Gathering you ip for dev container..."
 gather_ip_unix() {
     interface_name="en0"  # Default interface name for macOS; adjust as needed
     ip=$(ifconfig $interface_name | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | sed 's/inet //g')
-    echo "REACT_NATIVE_PACKAGER_HOSTNAME=$ip" > .devcontainer/.env
+    echo "REACT_NATIVE_PACKAGER_HOSTNAME=$ip" > .env
 }
 
 # Function to gather IP for Windows systems
@@ -25,7 +25,7 @@ gather_ip_windows() {
         Write-Error 'Error: Unable to retrieve IP address for interface $interfaceName'
         exit 1
     }
-    'REACT_NATIVE_PACKAGER_HOSTNAME=$ip' | Out-File -FilePath .devcontainer/.env -Encoding utf8
+    'REACT_NATIVE_PACKAGER_HOSTNAME=$ip' | Out-File -FilePath .env -Encoding utf8
     "
 }
 
@@ -47,7 +47,7 @@ generate_base_url_env() {
     port=8000
     if [[ $ip ]]; then
         base_url="EXPO_PUBLIC_API_URL=http://$ip:$port"
-        echo $base_url >> .devcontainer/.env
+        echo $base_url >> .env
         echo "BASE_URL generated successfully."
     else 
         echo "Error: IP not found. BASE_URL not generated"

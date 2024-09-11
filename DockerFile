@@ -6,16 +6,18 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 # default to port 19006 for node, and 19001 and 19002 (tests) for debug
-ARG PORT=19006
+ARG PORT=19000
 ENV PORT=$PORT
-EXPOSE 8081 19006 19001 19002
+EXPOSE 8081 19000 19001 19002
 
 #install global packages
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=/home/node/.npm-global/bin:$PATH
 RUN npm i --unsafe-perm -g npm@latest expo-cli exp
 # Install required packages
-RUN apt-get update && apt-get install -y qemu-user-static watchman
+RUN apt-get update && apt-get install -y \
+    qemu-user-static \
+    watchman
 #We need to install this inorder to start a tunnel on the docker conatiner
 RUN yarn add @expo/ngrok
 
