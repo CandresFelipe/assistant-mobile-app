@@ -15,12 +15,6 @@ import { useVerifyAssistance } from '@/queries/verifyAssistance'
 import { defaultErrorHandler } from '@/utils/error-handling'
 import { Toasts } from '@backpackapp-io/react-native-toast'
 
-interface TemporaryQRCodeResponse {
-	participant_id: string
-	event_id: string
-	qr_identifier: string
-}
-
 export default function QRScanScreen() {
 	const [cameraPermission, requestCameraPermission] = useCameraPermissions()
 	const [responseCameraPermission, setResonseCameraPermission] = useState<PermissionResponse>()
@@ -68,10 +62,9 @@ export default function QRScanScreen() {
 	const onCheckQrCode = (scanningResult: BarcodeScanningResult) => {
 		if (scanningResult.data && isActiveApp && isScanning && isScreenFocused) {
 			setIsScanning(false)
-			const parsedResult = JSON.parse(scanningResult.data) as TemporaryQRCodeResponse
 			verifyAssitanceMutation.mutate(
 				{
-					qr_data: Object.values(parsedResult).join(';')
+					qr_data: Object.values(scanningResult.data).join(';')
 				},
 				{
 					onSuccess: () => {
