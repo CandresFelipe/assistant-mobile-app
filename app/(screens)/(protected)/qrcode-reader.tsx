@@ -60,15 +60,16 @@ export default function QRScanScreen() {
 	}, [cameraPermission?.canAskAgain])
 
 	const onCheckQrCode = (scanningResult: BarcodeScanningResult) => {
+		console.log(isScanning)
 		if (scanningResult.data && isActiveApp && isScanning && isScreenFocused) {
 			setIsScanning(false)
 			verifyAssitanceMutation.mutate(
 				{
-					qr_data: Object.values(scanningResult.data).join(';')
+					qr_data: scanningResult.data
 				},
 				{
 					onSuccess: () => {
-						setIsScanning(false)
+						setIsScanning(true)
 						router.navigate('/success-feedback/')
 					},
 					onError: (error) => {
