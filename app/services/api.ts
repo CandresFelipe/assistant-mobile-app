@@ -27,7 +27,7 @@ export class ApiService {
 		const _config = {
 			...config,
 			baseURL: `${process.env.EXPO_PUBLIC_API_URL}`,
-			timeout: 5000
+			timeout: 30000
 		}
 		this.axiosInstance = axios.create(_config)
 
