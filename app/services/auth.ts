@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios'
 import { ApiService } from './api'
-import { defaultErrorHandler } from '@/utils/error-handling'
 import { saveSessionTokens, getSessionTokens } from './storage'
 import { ILoginResponse, IUserCreation, IUserLogin } from '@/types/user'
 
@@ -18,8 +17,6 @@ export class AuthorizationService {
 		const response = await this.apiClient.post<ILoginResponse>(`${this.BASE_PATH}create`, params)
 		if (response?.data) {
 			await saveSessionTokens(response.data)
-		} else {
-			defaultErrorHandler(response, false)
 		}
 	}
 

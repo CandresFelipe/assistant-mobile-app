@@ -1,9 +1,19 @@
 import { CustomButton } from '@/components'
-import Colors from '@/utils/theme'
 import { router } from 'expo-router'
-import { View, StyleSheet } from 'react-native'
+import Colors from '@/utils/theme'
+import { View, StyleSheet, Text } from 'react-native'
+import Animated, {
+	useAnimatedStyle,
+	withTiming,
+	Easing,
+	interpolate,
+	useSharedValue,
+	Extrapolation
+} from 'react-native-reanimated'
+import { useEffect } from 'react'
 
 export default function Welcome() {
+	const animatedOpacity = useSharedValue(1)
 	const registerNav = () => {
 		router.navigate('/register')
 	}
@@ -12,8 +22,29 @@ export default function Welcome() {
 		router.navigate('/login')
 	}
 
+	const logoAnimation = useAnimatedStyle(() => {
+		const opacity = interpolate(animatedOpacity.value, [0, 1], [1, 0], Extrapolation.CLAMP)
+
+		return {
+			opacity
+		}
+	})
+
+	useEffect(() => {
+		animatedOpacity.value = withTiming(0, {
+			duration: 2000, // 1 second animation
+			easing: Easing.ease
+		})
+	}, [])
+
 	return (
 		<View style={styles.container}>
+			<Animated.View style={[logoAnimation, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
+				<Text style={{ fontSize: 36, color: Colors.light.white, fontWeight: '900' }}>BLOCK-CERTIFIC@</Text>
+				<Text style={{ fontSize: 18, color: Colors.dark.textSecondary, textAlign: 'center', opacity: 0.5 }}>
+					App para la verificacion de asistencia de participantes
+				</Text>
+			</Animated.View>
 			<View style={{ position: 'absolute', bottom: 24, gap: 24, right: 0, left: 0, alignItems: 'center' }}>
 				<CustomButton title={'Register!'} onPress={registerNav} />
 				<CustomButton title={'Log In'} onPress={logInNav} />

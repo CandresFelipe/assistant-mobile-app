@@ -6,6 +6,7 @@ import Colors from '@/utils/theme'
 import { useRef } from 'react'
 import { useUserSession } from '@/contexts/authenticationContext'
 import { defaultErrorHandler } from '@/utils/error-handling'
+import { useRouter } from 'expo-router'
 
 const logInFields: FormField<IUserLogin>[] = [
 	{
@@ -40,18 +41,22 @@ const defaultValues: IUserLogin = {
 export default function LogIn() {
 	const formRef = useRef<IFormHandler>(null)
 	const { login } = useUserSession()
+	const router = useRouter()
 
 	const onLogIn = (data: IUserLogin) => {
 		login?.mutate(data, {
 			onError: (error) => {
 				defaultErrorHandler(error, true)
+			},
+			onSuccess: () => {
+				router.replace('/')
 			}
 		})
 	}
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.dark.primary }}>
-			<TouchableWithoutFeedback>
+			<TouchableWithoutFeedback style={{ backgroundColor: Colors.dark.primary }}>
 				<ScrollView
 					contentContainerStyle={{
 						justifyContent: 'center',

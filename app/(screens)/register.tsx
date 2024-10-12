@@ -80,7 +80,7 @@ export default function SignInPage() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-			style={{ flex: 1, marginBottom: 10, backgroundColor: Colors.dark.primary }}
+			style={{ flex: 1, backgroundColor: Colors.dark.primary }}
 		>
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 				<ScrollView

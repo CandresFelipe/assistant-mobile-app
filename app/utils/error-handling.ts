@@ -87,6 +87,7 @@ export function handleBaseError(error: unknown, silent: boolean) {
 }
 
 export function defaultErrorHandler(error: unknown, silent = true) {
+	console.warn('Error found', error)
 	if (isBaseError(error)) {
 		return handleBaseError(error, silent)
 	} else if (isApiError(error)) {

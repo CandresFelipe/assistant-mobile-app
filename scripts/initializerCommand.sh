@@ -43,21 +43,4 @@ fi
 
 echo "IP gathering complete"
 
-generate_base_url_env() {
-    port=8000
-    if [[ $ip ]]; then
-        base_url="EXPO_PUBLIC_API_URL=http://$ip:$port"
-        echo $base_url >> .env
-        echo "BASE_URL generated successfully."
-    else 
-        echo "Error: IP not found. BASE_URL not generated"
-        exit 1
-    fi
-
-}
-
-
-echo "Overrides server URL to .env"
-
-generate_base_url_env
     
