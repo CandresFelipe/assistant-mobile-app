@@ -13,11 +13,6 @@ interface NavigationHeaderProps extends PropsWithChildren {
 export const NavigationHeader: FunctionComponent<NavigationHeaderProps> = ({ onNavigate, backgroundColor }) => {
 	return (
 		<Header
-			statusBarProps={{
-				barStyle: 'light-content',
-				animated: true,
-				backgroundColor: Colors.dark.primary
-			}}
 			containerStyle={[styles.container, { backgroundColor: backgroundColor ? backgroundColor : Colors.dark.primary }]}
 			leftComponent={{
 				icon: 'chevron-left',
